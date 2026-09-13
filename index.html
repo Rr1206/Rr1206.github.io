@@ -303,17 +303,6 @@
   .tarjeta h3 { font-size: 18px; }
   .tarjeta p { margin: 0; color: var(--tinta-media); font-size: 16.5px; }
 
-  /* Aviso de SmartScreen: se adelanta al susto en vez de dejar que la
-     persona abandone la descarga sin decir nada. */
-  .aviso-windows {
-    max-width: 620px; margin: 30px auto 0; text-align: left;
-    background: var(--ambar-tenue); border: 1px solid #E8D3A6;
-    border-radius: 12px; padding: 22px 24px;
-  }
-  .aviso-windows h3 { font-size: 18px; color: var(--ambar); margin-bottom: 8px; }
-  .aviso-windows p { color: var(--tinta-media); font-size: 16.5px; margin: 0 0 10px; }
-  .aviso-windows p:last-child { margin-bottom: 0; }
-
   /* ── Preguntas (acordeón nativo, sin JavaScript) ───────────────────────── */
   .preguntas { display: grid; gap: 0 40px; }
   .pregunta { border-bottom: 1px solid var(--linea); }
@@ -337,9 +326,6 @@
   }
   .confianza h2 { color: #fff; }
   .confianza p { color: #C7D5E6; max-width: 46em; margin-inline: auto; }
-  .confianza .nota-testimonios {
-    font-size: 15px; color: #9FB2C8; margin-top: -4px;
-  }
   .datos-formales {
     display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 30px;
     margin-top: 26px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,.18);
@@ -666,19 +652,6 @@
       Instalador para Windows 10 y 11 · Unos 50 MB
     </p>
 
-    <!-- Windows avisa así con todo programa nuevo que no paga certificado.
-         Decirlo ANTES evita que la persona se asuste y abandone la descarga. -->
-    <div class="aviso-windows">
-      <h3>Windows le va a mostrar un aviso azul. Es normal.</h3>
-      <p>
-        Dirá <b>«Windows protegió su PC»</b>. No es un virus: le pasa a todo
-        programa nuevo de un desarrollador independiente. Pulse
-        <b>«Más información»</b> y luego <b>«Ejecutar de todos modos»</b>.
-      </p>
-      <p class="micro">
-        Si prefiere, escríbame por WhatsApp y lo acompaño mientras lo instala.
-      </p>
-    </div>
   </div>
 </section>
 
@@ -761,10 +734,6 @@
         No es una tienda anónima. Soy una persona con RUC, que responde por
         WhatsApp y le emite su comprobante. Si el programa le falla, tiene a
         quién reclamarle.
-      </p>
-      <p class="nota-testimonios">
-        RentaFácil es nuevo: todavía no tiene testimonios que mostrarle acá.
-        Pruebe el demo gratis y decida usted mismo si le sirve.
       </p>
       <div class="datos-formales">
         <div><b>RentaFácil</b>por Richard Rojas</div>
