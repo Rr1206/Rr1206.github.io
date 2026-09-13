@@ -14,10 +14,12 @@
 <meta property="og:locale" content="es_PE">
 
 <!-- ══════════════════════════════════════════════════════════════════════
-     DATOS DE VENTA: WhatsApp, RUC y nombre ya están puestos.
+     DATOS DE VENTA — todos puestos: WhatsApp, RUC, nombre y descarga.
      El contacto es solo por WhatsApp, a propósito: no hay correo publicado.
-     Queda pendiente buscar CAMBIAR para el enlace de descarga, que se llena
-     con la URL del Release de GitHub donde vive el instalador.
+
+     AL SACAR UNA VERSIÓN NUEVA: el instalador se sube como Release en este
+     mismo repositorio y hay que actualizar el número de versión en el enlace
+     del botón grande de descarga (busque "releases/download").
      ══════════════════════════════════════════════════════════════════════ -->
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -419,7 +421,8 @@
         </svg>
         989 822 519
       </a>
-      <!-- CAMBIAR: el enlace de descarga (ver README_WEB.md, paso 3) -->
+      <!-- Baja a la sección de descarga a propósito: ahí está el aviso de
+           Windows, y conviene que lo lea ANTES de bajar el archivo. -->
       <a class="boton boton-primario" href="#descargar">Descargar demo</a>
     </div>
   </div>
@@ -437,7 +440,7 @@
     </p>
 
     <div class="acciones">
-      <!-- CAMBIAR: el enlace de descarga -->
+      <!-- Igual que el de la barra: lleva a la sección, no al archivo. -->
       <a class="boton boton-ambar boton-grande" href="#descargar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -648,8 +651,10 @@
       </div>
     </div>
 
-    <!-- CAMBIAR: el enlace de descarga (ver README_WEB.md, paso 3) -->
-    <a class="boton boton-primario boton-grande" href="#" id="enlace-descarga">
+    <!-- Este sí baja el archivo. Al sacar una versión nueva hay que cambiar
+         el número de aquí (v0.1.0 aparece dos veces en la URL). -->
+    <a class="boton boton-primario boton-grande" id="enlace-descarga"
+       href="https://github.com/Rr1206/Rr1206.github.io/releases/download/v0.1.0/RentaFacil-0.1.0-instalador.exe">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
