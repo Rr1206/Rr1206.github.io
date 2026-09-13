@@ -1,0 +1,933 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RentaFácil — Control de alquileres para Windows</title>
+<meta name="description" content="Lleve el control de sus cuartos, departamentos y locales: cobros del mes, morosos, recibos en PDF y agua y luz. Funciona sin internet. Se paga una sola vez.">
+
+<!-- Cómo se ve al compartirlo por WhatsApp o Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="RentaFácil — Sepa quién le debe, en 5 segundos">
+<meta property="og:description" content="Control de alquileres para Windows. Sin internet, sin mensualidad. Pruébelo gratis con 3 unidades.">
+<meta property="og:image" content="capturas/tablero.png">
+<meta property="og:locale" content="es_PE">
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     DATOS DE VENTA: WhatsApp, RUC y nombre ya están puestos.
+     El contacto es solo por WhatsApp, a propósito: no hay correo publicado.
+     Queda pendiente buscar CAMBIAR para el enlace de descarga, que se llena
+     con la URL del Release de GitHub donde vive el instalador.
+     ══════════════════════════════════════════════════════════════════════ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600..800&display=swap" rel="stylesheet">
+
+<style>
+  /* ── Paleta ─────────────────────────────────────────────────────────────
+     Azul y ámbar, no azul y morado: son los dos colores que ya usa el
+     programa para decir "al día" y "por vencer" en el semáforo de unidades.
+     La página los toma prestados a propósito — es la misma marca. ── */
+  :root {
+    --azul:        #1F5C99;
+    --azul-hondo:  #0C2D4D;
+    --azul-noche:  #081D33;
+    --azul-tenue:  #E9F1F8;
+    --tinta:       #101A24;
+    --tinta-media: #47576A;
+    --tinta-suave: #7C8A9B;
+    --papel:       #FFFFFF;
+    --papel-alt:   #F3F6FA;
+    --linea:       #E2E7EE;
+    --verde:       #1B7A45;
+    --verde-tenue: #E6F4EB;
+    --rojo:        #B3261E;
+    --ambar:       #9C6300;
+    --ambar-tenue: #FBF0DA;
+    --ambar-brillo:#F2B33D;
+    --sombra:      0 1px 2px rgba(9,20,33,.06), 0 18px 40px -24px rgba(9,20,33,.35);
+    --sombra-alta: 0 30px 70px -28px rgba(4,13,26,.55);
+    --fuente:       "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    --fuente-titulo:"Fraunces", Georgia, "Times New Roman", serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--papel);
+    color: var(--tinta);
+    font-family: var(--fuente);
+    /* Cuerpo grande: el lector tiene entre 40 y 65 años. */
+    font-size: 18px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    font-variant-numeric: tabular-nums;
+  }
+
+  img { max-width: 100%; display: block; }
+  a { color: var(--azul); }
+  :focus-visible { outline: 3px solid var(--ambar-brillo); outline-offset: 3px; border-radius: 6px; }
+
+  .contenedor { width: 100%; max-width: 1100px; margin: 0 auto; padding: 0 22px; }
+
+  h1, h2, h3 { font-family: var(--fuente-titulo); }
+  h1 {
+    font-size: clamp(36px, 6.4vw, 58px);
+    line-height: 1.05; letter-spacing: -.01em; font-weight: 700;
+    margin: 0 0 20px; text-wrap: balance;
+  }
+  h2 {
+    font-size: clamp(27px, 4.2vw, 36px);
+    line-height: 1.18; letter-spacing: -.005em; font-weight: 700;
+    margin: 0 0 14px; text-wrap: balance;
+  }
+  h3 { font-size: 21px; line-height: 1.3; font-weight: 700; margin: 0 0 8px; font-family: var(--fuente); }
+  p { margin: 0 0 16px; }
+  .bajada { font-size: clamp(18px, 2.4vw, 21px); color: var(--tinta-media); max-width: 40em; }
+  .centrado { text-align: center; }
+  .centrado .bajada { margin-inline: auto; }
+  .resalte { color: var(--ambar-brillo); }
+
+  /* ── Botones ────────────────────────────────────────────────────────── */
+  .boton {
+    display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+    padding: 14px 24px; border-radius: 9px;
+    font-size: 17px; font-weight: 600; text-decoration: none;
+    border: 1.5px solid transparent; cursor: pointer;
+    transition: background-color .15s, border-color .15s, transform .08s;
+  }
+  .boton:active { transform: translateY(1px); }
+  .boton-primario { background: var(--azul); color: #fff; }
+  .boton-primario:hover { background: var(--azul-hondo); }
+  .boton-ambar { background: var(--ambar-brillo); color: #382200; }
+  .boton-ambar:hover { background: #E0A32E; }
+  .boton-suave { background: #fff; color: var(--tinta); border-color: #C9D2DC; }
+  .boton-suave:hover { border-color: var(--azul); color: var(--azul); }
+  .boton-fantasma { background: transparent; color: #fff; border-color: rgba(255,255,255,.35); }
+  .boton-fantasma:hover { border-color: #fff; background: rgba(255,255,255,.08); }
+  .boton-grande { padding: 18px 34px; font-size: 19px; }
+  .boton svg { width: 19px; height: 19px; flex: none; }
+
+  /* ── Barra de navegación ────────────────────────────────────────────── */
+  .barra {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(255,255,255,.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--linea);
+  }
+  .barra .contenedor {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 18px; height: 66px;
+  }
+  .marca { display: flex; align-items: center; gap: 9px; text-decoration: none; flex: none; }
+  .marca svg { width: 26px; height: 26px; flex: none; }
+  .marca b { font-size: 19px; font-weight: 700; color: var(--azul); letter-spacing: -.01em; font-family: var(--fuente-titulo); }
+
+  .nav-links {
+    display: none; list-style: none; margin: 0; padding: 0; gap: 26px;
+    font-size: 15.5px; font-weight: 600; color: var(--tinta-media);
+  }
+  .nav-links a { color: inherit; text-decoration: none; }
+  .nav-links a:hover { color: var(--azul); }
+  .nav-derecha { display: flex; align-items: center; gap: 16px; }
+  .nav-tel {
+    display: none; align-items: center; gap: 7px;
+    font-size: 15px; font-weight: 600; color: var(--tinta-media); text-decoration: none;
+  }
+  .nav-tel svg { width: 17px; height: 17px; color: var(--verde); }
+  .barra .boton { padding: 10px 18px; font-size: 15px; }
+
+  /* ── Secciones ──────────────────────────────────────────────────────── */
+  section { padding: 76px 0; }
+  .alterna { background: var(--papel-alt); border-block: 1px solid var(--linea); }
+
+  /* ── Portada (banda oscura) ─────────────────────────────────────────── */
+  .portada {
+    background:
+      radial-gradient(70% 130% at 88% -10%, rgba(31,92,153,.55), transparent 60%),
+      linear-gradient(175deg, var(--azul-noche) 0%, var(--azul-hondo) 62%, var(--azul-hondo) 100%);
+    color: #fff;
+    padding: 56px 0 76px;
+    overflow: clip;
+  }
+  .portada .etiqueta {
+    background: rgba(242,179,61,.14); color: var(--ambar-brillo);
+    border: 1px solid rgba(242,179,61,.35);
+  }
+  .portada h1 { color: #fff; }
+  .portada .bajada { color: #C7D5E6; }
+  .portada .acciones { display: flex; flex-wrap: wrap; gap: 12px; margin: 26px 0 16px; }
+  .micro { font-size: 15px; color: var(--tinta-suave); margin: 0; }
+  .micro b { color: var(--tinta-media); }
+  .portada .micro { color: #9FB2C8; }
+  .portada .micro b { color: #E6EDF5; }
+
+  .etiqueta {
+    display: inline-block; font-size: 13px; font-weight: 700; letter-spacing: .09em;
+    text-transform: uppercase; color: var(--azul);
+    background: var(--azul-tenue); padding: 5px 11px; border-radius: 999px;
+    margin-bottom: 12px;
+  }
+
+  /* Las 6 capturas salen todas de la MISMA ventana de la app, así que
+     comparten una sola proporción real (2640×1600). "width/height" +
+     "aspect-ratio" + "object-fit" es cinturón y tirantes: entre los tres no
+     hay forma de que el navegador la estire ni la recorte mal. */
+  /* Las capturas son del tema oscuro del programa —el que usa Richard—, así
+     que el marco imita una ventana oscura y no una clara: una barra de
+     título clara sobre una captura oscura se vería pegada, no real. */
+  .marco {
+    border: 1px solid rgba(255,255,255,.12); border-radius: 14px;
+    overflow: hidden; box-shadow: var(--sombra); background: #0D141C;
+  }
+  .marco img {
+    width: 100%; height: auto; display: block;
+    aspect-ratio: 2640 / 1600; object-fit: contain;
+  }
+  .marco-barra {
+    display: flex; align-items: center; gap: 7px;
+    padding: 11px 15px; background: #10181F;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  .marco-barra i { width: 11px; height: 11px; border-radius: 50%; background: #38424E; flex: none; }
+  .marco-barra em {
+    margin-left: 8px; font-style: normal; font-size: 13px;
+    color: #7C8A9B; font-weight: 600;
+  }
+
+  /* ── Franja de datos honestos (nada de cifras inventadas) ─────────────── */
+  .franja-datos {
+    display: grid; gap: 26px; text-align: center;
+  }
+  .franja-datos dt {
+    font-family: var(--fuente-titulo); font-weight: 700;
+    font-size: clamp(26px, 4vw, 34px); color: var(--azul-hondo);
+  }
+  .franja-datos dd {
+    margin: 4px 0 0; font-size: 14.5px; color: var(--tinta-media);
+    text-transform: uppercase; letter-spacing: .05em; font-weight: 600;
+  }
+
+  /* ── Carrusel de módulos ────────────────────────────────────────────────
+     Va arriba de todo, en la portada: es lo primero que ve el visitante, no
+     algo que tenga que bajar a buscar. Una pantalla a la vez —a su tamaño
+     real, sin agrandarla más de lo que da su resolución—, con su explicación
+     en una sola línea. Pasa sola cada 5 s; con flechas o con las píldoras se
+     salta a cualquier módulo. Se detiene sola si el visitante pasa el mouse
+     o si su sistema pide menos movimiento — nunca compite por el control. */
+  .carrusel { position: relative; max-width: 620px; margin: 0 auto; }
+  .carrusel-viewport { overflow: hidden; border-radius: 16px; }
+  .carrusel-pista {
+    display: flex;
+    transition: transform .5s cubic-bezier(.65, 0, .35, 1);
+  }
+  .diapositiva { flex: 0 0 100%; min-width: 0; }
+  .diapositiva .marco { margin: 0; box-shadow: var(--sombra-alta); border-color: rgba(255,255,255,.14); }
+  .diapositiva .pie {
+    display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 14px;
+    padding: 20px 6px 0;
+  }
+  .diapositiva .pie .etiqueta { margin: 0; }
+  .diapositiva .pie span:last-child { font-size: 16.5px; color: #C7D5E6; }
+
+  .carrusel-flecha {
+    position: absolute; top: 41%; transform: translateY(-50%);
+    width: 44px; height: 44px; border-radius: 50%; flex: none;
+    background: #fff; border: 1px solid var(--linea); box-shadow: var(--sombra);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--tinta); padding: 0; z-index: 4;
+  }
+  .carrusel-flecha:hover { border-color: var(--azul); color: var(--azul); }
+  .carrusel-flecha svg { width: 20px; height: 20px; }
+  .carrusel-flecha.anterior { left: -6px; }
+  .carrusel-flecha.siguiente { right: -6px; }
+  @media (min-width: 760px) {
+    .carrusel-flecha.anterior { left: -56px; }
+    .carrusel-flecha.siguiente { right: -56px; }
+  }
+
+  .carrusel-pildoras {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
+    margin: 28px 0 0; padding: 0; list-style: none;
+  }
+  .carrusel-pildoras button {
+    border: 1px solid var(--linea); background: #fff; border-radius: 999px;
+    padding: 9px 16px; font-size: 14.5px; font-weight: 600; color: var(--tinta-suave);
+    cursor: pointer; transition: background-color .15s, border-color .15s, color .15s;
+  }
+  .carrusel-pildoras button:hover { border-color: var(--azul); color: var(--azul); }
+  .carrusel-pildoras button[aria-current="true"] {
+    background: var(--azul); border-color: var(--azul); color: #fff;
+  }
+
+  /* ── Precio ─────────────────────────────────────────────────────────── */
+  .precio-caja {
+    max-width: 560px; margin: 34px auto 0; background: #fff;
+    border: 2px solid var(--azul); border-radius: 16px;
+    padding: 36px 30px; text-align: center; box-shadow: var(--sombra);
+    position: relative;
+  }
+  .cinta {
+    display: inline-block; background: var(--ambar-tenue); color: var(--ambar);
+    font-size: 14px; font-weight: 700; padding: 6px 14px; border-radius: 999px;
+    margin-bottom: 18px;
+  }
+  .cifras { display: flex; align-items: baseline; justify-content: center; gap: 14px; }
+  .antes { font-size: 26px; color: var(--tinta-suave); text-decoration: line-through; }
+  .ahora { font-family: var(--fuente-titulo); font-size: 62px; font-weight: 700; letter-spacing: -.02em; line-height: 1; }
+  .una-vez {
+    font-size: 19px; font-weight: 700; color: var(--verde);
+    background: var(--verde-tenue); display: inline-block;
+    padding: 8px 16px; border-radius: 8px; margin: 18px 0 6px;
+  }
+  .incluye { text-align: left; margin: 24px 0 0; padding: 0; list-style: none; }
+  .incluye li {
+    display: flex; gap: 11px; align-items: flex-start;
+    padding: 9px 0; border-bottom: 1px solid var(--linea); font-size: 16.5px;
+  }
+  .incluye li:last-child { border-bottom: none; }
+  .incluye svg { width: 19px; height: 19px; flex: none; margin-top: 3px; color: var(--verde); }
+
+  /* ── Tarjetas ───────────────────────────────────────────────────────── */
+  .rejilla { display: grid; gap: 18px; }
+  .tarjeta {
+    background: #fff; border: 1px solid var(--linea);
+    border-radius: 12px; padding: 24px;
+  }
+  .tarjeta h3 { font-size: 18px; }
+  .tarjeta p { margin: 0; color: var(--tinta-media); font-size: 16.5px; }
+
+  /* Aviso de SmartScreen: se adelanta al susto en vez de dejar que la
+     persona abandone la descarga sin decir nada. */
+  .aviso-windows {
+    max-width: 620px; margin: 30px auto 0; text-align: left;
+    background: var(--ambar-tenue); border: 1px solid #E8D3A6;
+    border-radius: 12px; padding: 22px 24px;
+  }
+  .aviso-windows h3 { font-size: 18px; color: var(--ambar); margin-bottom: 8px; }
+  .aviso-windows p { color: var(--tinta-media); font-size: 16.5px; margin: 0 0 10px; }
+  .aviso-windows p:last-child { margin-bottom: 0; }
+
+  /* ── Preguntas (acordeón nativo, sin JavaScript) ───────────────────────── */
+  .preguntas { display: grid; gap: 0 40px; }
+  .pregunta { border-bottom: 1px solid var(--linea); }
+  .pregunta summary {
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    padding: 19px 2px; font-size: 18px; font-weight: 700; cursor: pointer;
+    list-style: none; color: var(--tinta);
+  }
+  .pregunta summary::-webkit-details-marker { display: none; }
+  .pregunta summary svg {
+    width: 19px; height: 19px; flex: none; color: var(--tinta-suave);
+    transition: transform .18s;
+  }
+  .pregunta[open] summary svg { transform: rotate(180deg); color: var(--azul); }
+  .pregunta p { color: var(--tinta-media); margin: 0 0 20px; padding-right: 30px; }
+
+  /* ── Confianza ──────────────────────────────────────────────────────── */
+  .confianza {
+    background: var(--azul-hondo); color: #fff; border-radius: 18px;
+    padding: 44px 34px; text-align: center;
+  }
+  .confianza h2 { color: #fff; }
+  .confianza p { color: #C7D5E6; max-width: 46em; margin-inline: auto; }
+  .confianza .nota-testimonios {
+    font-size: 15px; color: #9FB2C8; margin-top: -4px;
+  }
+  .datos-formales {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 30px;
+    margin-top: 26px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,.18);
+    font-size: 16px;
+  }
+  .datos-formales div { color: #C7D5E6; }
+  .datos-formales b { display: block; color: #fff; font-weight: 700; }
+
+  /* ── Pie ────────────────────────────────────────────────────────────── */
+  footer { background: var(--azul-noche); color: #B9C7D8; padding: 52px 0 34px; }
+  footer .contenedor { display: grid; gap: 30px; }
+  footer p, footer li { font-size: 15.5px; color: #A9BACD; margin: 0 0 8px; }
+  footer a { color: #DCE6F1; }
+  footer h4 { font-size: 13px; text-transform: uppercase; letter-spacing: .09em; color: #7C93AC; margin: 0 0 14px; }
+  footer ul { list-style: none; margin: 0; padding: 0; }
+  footer .marca b { color: #fff; }
+  .legal { border-top: 1px solid rgba(255,255,255,.1); padding-top: 22px; font-size: 13.5px; color: #7C93AC; }
+
+  /* ── WhatsApp flotante: así se compra en Perú ───────────────────────── */
+  .flotante {
+    position: fixed; right: 18px; bottom: 18px; z-index: 60;
+    display: inline-flex; align-items: center; gap: 10px;
+    background: #128C7E; color: #fff; text-decoration: none;
+    padding: 14px 20px; border-radius: 999px; font-weight: 700; font-size: 16px;
+    box-shadow: 0 8px 26px rgba(18,140,126,.42);
+  }
+  .flotante:hover { background: #0f7568; }
+  .flotante svg { width: 22px; height: 22px; }
+  .flotante span { display: none; }
+
+  /* ── De tablet para arriba ──────────────────────────────────────────── */
+  @media (min-width: 700px) {
+    .nav-links { display: flex; }
+    .nav-tel { display: inline-flex; }
+    .flotante span { display: inline; }
+    .franja-datos { grid-template-columns: repeat(4, 1fr); }
+    .rejilla { grid-template-columns: repeat(3, 1fr); }
+    .preguntas { grid-template-columns: 1fr 1fr; }
+    footer .contenedor { grid-template-columns: 2fr 1fr 1fr; }
+    .legal { grid-column: 1 / -1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═════════════════════════════════════════════ barra ═══════════════ -->
+<header class="barra">
+  <div class="contenedor">
+    <a class="marca" href="#">
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <rect width="64" height="64" rx="13" fill="#1F5C99"/>
+        <path d="M14 31 L32 16 L50 31 V49 a3 3 0 0 1-3 3 H17 a3 3 0 0 1-3-3 Z"
+              fill="none" stroke="#fff" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+        <circle cx="32" cy="35" r="4.6" fill="none" stroke="#fff" stroke-width="3.4"/>
+        <path d="M32 39.6 V47" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/>
+        <path d="M32 44 h4" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/>
+      </svg>
+      <b>RentaFácil</b>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="#funciones">Funciones</a></li>
+      <li><a href="#precio">Precio</a></li>
+      <li><a href="#descargar">Demo</a></li>
+      <li><a href="manual.html">Manual</a></li>
+      <li><a href="#preguntas">Preguntas</a></li>
+    </ul>
+
+    <div class="nav-derecha">
+      <a class="nav-tel" href="https://wa.me/51989822519">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.3 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3z"/>
+          <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2z"/>
+        </svg>
+        989 822 519
+      </a>
+      <!-- CAMBIAR: el enlace de descarga (ver README_WEB.md, paso 3) -->
+      <a class="boton boton-primario" href="#descargar">Descargar demo</a>
+    </div>
+  </div>
+</header>
+
+<!-- ═════════════════════════════════════════════ portada ═════════════ -->
+<section class="portada" id="funciones">
+  <div class="contenedor">
+    <span class="etiqueta">RentaFácil · para Windows</span>
+    <h1>Sepa quién le debe,<br>en <span class="resalte">5 segundos</span>.</h1>
+    <p class="bajada">
+      Lleve el control de sus cuartos, departamentos y locales: los cobros del
+      mes, quién está atrasado, los recibos en PDF y el agua y la luz.
+      En su computadora, sin internet.
+    </p>
+
+    <div class="acciones">
+      <!-- CAMBIAR: el enlace de descarga -->
+      <a class="boton boton-ambar boton-grande" href="#descargar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <path d="M7 10l5 5 5-5"/><path d="M12 15V3"/>
+        </svg>
+        Descargar demo gratis
+      </a>
+      <a class="boton boton-fantasma boton-grande" href="#precio">Ver el precio</a>
+    </div>
+
+    <p class="micro">
+      <b>Windows 10 y 11</b> · 3 unidades gratis, sin límite de tiempo ·
+      No le pide tarjeta ni correo
+    </p>
+
+    <div class="carrusel" data-carrusel style="margin-top:52px">
+      <button class="carrusel-flecha anterior" type="button" aria-label="Pantalla anterior">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+             stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <button class="carrusel-flecha siguiente" type="button" aria-label="Pantalla siguiente">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+             stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+
+      <div class="carrusel-viewport">
+        <div class="carrusel-pista">
+
+          <div class="diapositiva" role="group" aria-roledescription="diapositiva" aria-label="1 de 6: Panel principal">
+            <div class="marco">
+              <div class="marco-barra" aria-hidden="true"><i></i><i></i><i></i><em>RentaFácil</em></div>
+              <img src="capturas/tablero.png" width="2640" height="1600"
+                   alt="Panel con la deuda total, el semáforo de unidades y la lista de morosos">
+            </div>
+            <p class="pie"><span class="etiqueta">Panel principal</span>
+              <span>Abre y ya sabe cuánto le deben, quién está atrasado y quién paga esta semana.</span></p>
+          </div>
+
+          <div class="diapositiva" role="group" aria-roledescription="diapositiva" aria-label="2 de 6: Unidades">
+            <div class="marco">
+              <div class="marco-barra" aria-hidden="true"><i></i><i></i><i></i><em>RentaFácil</em></div>
+              <img src="capturas/unidades.png" width="2640" height="1600" loading="lazy"
+                   alt="Cuadrícula de unidades con color según si están al día, debiendo o libres">
+            </div>
+            <p class="pie"><span class="etiqueta">Unidades</span>
+              <span>Cada cuarto o departamento, en verde, rojo o gris: al día, debiendo o libre.</span></p>
+          </div>
+
+          <div class="diapositiva" role="group" aria-roledescription="diapositiva" aria-label="3 de 6: Cobros">
+            <div class="marco">
+              <div class="marco-barra" aria-hidden="true"><i></i><i></i><i></i><em>RentaFácil</em></div>
+              <img src="capturas/cobros.png" width="2640" height="1600" loading="lazy"
+                   alt="Tabla de cobros del mes con montos, saldos y estado de cada uno">
+            </div>
+            <p class="pie"><span class="etiqueta">Cobros</span>
+              <span>Registrar un pago son dos clics. El recibo en PDF sale solo.</span></p>
+          </div>
+
+          <div class="diapositiva" role="group" aria-roledescription="diapositiva" aria-label="4 de 6: Inquilinos">
+            <div class="marco">
+              <div class="marco-barra" aria-hidden="true"><i></i><i></i><i></i><em>RentaFácil</em></div>
+              <img src="capturas/inquilinos.png" width="2640" height="1600" loading="lazy"
+                   alt="Ficha del inquilino con su contrato, su deuda y su historial de pagos">
+            </div>
+            <p class="pie"><span class="etiqueta">Inquilinos</span>
+              <span>Un botón abre WhatsApp con el recordatorio de cobro ya escrito.</span></p>
+          </div>
+
+          <div class="diapositiva" role="group" aria-roledescription="diapositiva" aria-label="5 de 6: Agua y luz">
+            <div class="marco">
+              <div class="marco-barra" aria-hidden="true"><i></i><i></i><i></i><em>RentaFácil</em></div>
+              <img src="capturas/servicios.png" width="2640" height="1600" loading="lazy"
+                   alt="Registro de lecturas de agua y luz con el monto calculado">
+            </div>
+            <p class="pie"><span class="etiqueta">Agua y luz</span>
+              <span>Anota la lectura y el programa calcula el monto con su tarifa.</span></p>
+          </div>
+
+          <div class="diapositiva" role="group" aria-roledescription="diapositiva" aria-label="6 de 6: Reportes">
+            <div class="marco">
+              <div class="marco-barra" aria-hidden="true"><i></i><i></i><i></i><em>RentaFácil</em></div>
+              <img src="capturas/reportes.png" width="2640" height="1600" loading="lazy"
+                   alt="Reporte de ingresos por mes con gráfico de barras">
+            </div>
+            <p class="pie"><span class="etiqueta">Reportes</span>
+              <span>Sus ingresos por mes, listos para exportar a Excel o para SUNAT.</span></p>
+          </div>
+
+        </div>
+      </div>
+
+      <ul class="carrusel-pildoras">
+        <li><button type="button" aria-current="true">Panel principal</button></li>
+        <li><button type="button" aria-current="false">Unidades</button></li>
+        <li><button type="button" aria-current="false">Cobros</button></li>
+        <li><button type="button" aria-current="false">Inquilinos</button></li>
+        <li><button type="button" aria-current="false">Agua y luz</button></li>
+        <li><button type="button" aria-current="false">Reportes</button></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════════════════════════════════ datos honestos ══════ -->
+<section>
+  <div class="contenedor">
+    <dl class="franja-datos">
+      <div><dt>S/ 149</dt><dd>Pago único</dd></div>
+      <div><dt>3 clics</dt><dd>Para registrar un cobro</dd></div>
+      <div><dt>0%</dt><dd>Internet necesario para usarlo</dd></div>
+      <div><dt>100%</dt><dd>Sus datos, en su propia PC</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ═════════════════════════════════════════════ el problema ═════════ -->
+<section class="alterna">
+  <div class="contenedor centrado">
+    <h2>El cuaderno funciona… hasta que no.</h2>
+    <p class="bajada">
+      Si alquila entre 3 y 20 unidades, lo más probable es que lleve la cuenta
+      en un cuaderno o en un Excel que solo usted entiende. Funciona, hasta el
+      día en que se le pasa un mes, no recuerda quién quedó debiendo la mitad,
+      o busca el recibo del año pasado y no aparece.
+    </p>
+  </div>
+</section>
+
+<!-- ═════════════════════════════════════════════ precio ══════════════ -->
+<section class="alterna" id="precio">
+  <div class="contenedor centrado">
+    <h2>Un solo pago. Sin mensualidad.</h2>
+    <p class="bajada">
+      No es una suscripción. Lo paga una vez y es suyo, con las
+      actualizaciones incluidas.
+    </p>
+
+    <div class="precio-caja">
+      <span class="cinta">Precio de lanzamiento · primeros 30 clientes</span>
+      <div class="cifras">
+        <span class="antes">S/ 199</span>
+        <span class="ahora">S/ 149</span>
+      </div>
+      <div class="una-vez">Se paga una sola vez</div>
+
+      <ul class="incluye">
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+               stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          <span>Unidades <b>ilimitadas</b></span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+               stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          <span>Recibos en PDF con su logo</span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+               stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          <span>Reportes y exportación a Excel</span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+               stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          <span>Respaldo automático de sus datos</span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+               stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          <span>Soporte por WhatsApp</span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+               stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          <span>Boleta o factura, si la necesita</span>
+        </li>
+      </ul>
+    </div>
+
+    <p class="micro" style="margin-top:20px">
+      Pago por Yape o transferencia. Primero pruébelo, después decide.
+    </p>
+  </div>
+</section>
+
+<!-- ═════════════════════════════════════════════ el demo ═════════════ -->
+<section id="descargar">
+  <div class="contenedor centrado">
+    <h2>Pruébelo con sus datos antes de pagar</h2>
+    <p class="bajada">
+      El demo no es una versión recortada: es el programa completo con un tope
+      de 3 unidades. Cargue sus cuartos de verdad y vea si le sirve.
+    </p>
+
+    <div class="rejilla" style="margin:32px 0 34px; text-align:left">
+      <div class="tarjeta">
+        <h3>Sin límite de tiempo</h3>
+        <p>No caduca a los 15 días. Úselo el tiempo que quiera.</p>
+      </div>
+      <div class="tarjeta">
+        <h3>Sin registro</h3>
+        <p>No le pide correo, ni tarjeta, ni crear una cuenta.</p>
+      </div>
+      <div class="tarjeta">
+        <h3>Sus datos no se pierden</h3>
+        <p>Al comprar la clave, todo lo que ya cargó sigue ahí.</p>
+      </div>
+    </div>
+
+    <!-- CAMBIAR: el enlace de descarga (ver README_WEB.md, paso 3) -->
+    <a class="boton boton-primario boton-grande" href="#" id="enlace-descarga">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <path d="M7 10l5 5 5-5"/><path d="M12 15V3"/>
+      </svg>
+      Descargar RentaFácil
+    </a>
+    <p class="micro" style="margin-top:14px">
+      Instalador para Windows 10 y 11 · Unos 50 MB
+    </p>
+
+    <!-- Windows avisa así con todo programa nuevo que no paga certificado.
+         Decirlo ANTES evita que la persona se asuste y abandone la descarga. -->
+    <div class="aviso-windows">
+      <h3>Windows le va a mostrar un aviso azul. Es normal.</h3>
+      <p>
+        Dirá <b>«Windows protegió su PC»</b>. No es un virus: le pasa a todo
+        programa nuevo de un desarrollador independiente. Pulse
+        <b>«Más información»</b> y luego <b>«Ejecutar de todos modos»</b>.
+      </p>
+      <p class="micro">
+        Si prefiere, escríbame por WhatsApp y lo acompaño mientras lo instala.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════════════════════════════════ preguntas ═══════════ -->
+<section class="alterna" id="preguntas">
+  <div class="contenedor" style="max-width:920px">
+    <h2 class="centrado" style="margin-bottom:32px">Preguntas frecuentes</h2>
+
+    <div class="preguntas">
+      <details class="pregunta" open>
+        <summary>¿Necesito internet?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </summary>
+        <p>No. El programa funciona completo sin conexión. Solo necesita internet
+          para descargarlo la primera vez.</p>
+      </details>
+
+      <details class="pregunta">
+        <summary>¿Dónde quedan mis datos?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </summary>
+        <p>En su computadora, en una carpeta suya. No se suben a ningún lado.
+          Además el programa guarda una copia de seguridad cada vez que lo cierra,
+          y conserva las últimas diez.</p>
+      </details>
+
+      <details class="pregunta">
+        <summary>¿Emite boletas o facturas electrónicas?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </summary>
+        <p>No. RentaFácil es para su control interno: los recibos que imprime son
+          constancia de que usted recibió el dinero. Quien alquila como persona
+          natural no emite boleta ni factura, paga con el Formulario 1683 — y para
+          eso el programa le arma el reporte de cuánto declarar cada mes.</p>
+      </details>
+
+      <details class="pregunta">
+        <summary>¿En cuántas computadoras puedo usarlo?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </summary>
+        <p>En una. La clave se genera para su equipo. Si cambia de computadora o
+          la formatea, me escribe y le mando una clave nueva sin costo.</p>
+      </details>
+
+      <details class="pregunta">
+        <summary>¿Y si se malogra mi computadora?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </summary>
+        <p>Desde Configuración puede guardar una copia de todos sus datos en una
+          USB o en una carpeta de la nube (OneDrive, Google Drive). Con ese
+          archivo recupera todo en la máquina nueva.</p>
+      </details>
+
+      <details class="pregunta">
+        <summary>¿Sirve si cobro en dólares?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </summary>
+        <p>Sí. Cada contrato tiene su moneda, y los totales se muestran siempre
+          separados: nunca verá soles y dólares sumados en un mismo número.</p>
+      </details>
+
+      <details class="pregunta">
+        <summary>¿Cómo compro la clave?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </summary>
+        <p>Me escribe por WhatsApp, me pasa el ID de equipo que le muestra el
+          programa, paga por Yape o transferencia y le devuelvo su clave. Toma
+          unos minutos.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════════════════════════════════ confianza ═══════════ -->
+<section>
+  <div class="contenedor">
+    <div class="confianza">
+      <h2>Quién le vende esto</h2>
+      <p>
+        No es una tienda anónima. Soy una persona con RUC, que responde por
+        WhatsApp y le emite su comprobante. Si el programa le falla, tiene a
+        quién reclamarle.
+      </p>
+      <p class="nota-testimonios">
+        RentaFácil es nuevo: todavía no tiene testimonios que mostrarle acá.
+        Pruebe el demo gratis y decida usted mismo si le sirve.
+      </p>
+      <div class="datos-formales">
+        <div><b>RentaFácil</b>por Richard Rojas</div>
+        <div><b>RUC 10745996286</b>Régimen MYPE Tributario</div>
+        <div><b>+51 989 822 519</b>WhatsApp</div>
+        <div><b>Boleta o factura</b>A pedido</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--
+  ══════════════════════════════════════════════════════════════════════════
+  NEGOCIOFÁCIL — el ERP.
+
+  ESTA SECCIÓN ESTÁ APAGADA A PROPÓSITO. Enciéndala el día que el ERP esté
+  realmente a la venta: borre esta línea de arriba y la de «FIN» más abajo.
+
+  Mientras tanto la página no promete algo que todavía no puede entregar, y
+  no le quita fuerza al único mensaje que importa hoy: que descarguen el demo.
+
+  Ojo con el modelo de negocio: el ERP emite facturas y guías electrónicas, y
+  eso cuesta por documento. NO se puede vender una sola vez como RentaFácil.
+  Por eso el texto dice «desde S/ XX al mes» y no un precio único.
+  ══════════════════════════════════════════════════════════════════════════
+
+<section class="alterna" id="negociofacil">
+  <div class="contenedor centrado">
+    <span class="etiqueta">Próximamente</span>
+    <h2>NegocioFácil</h2>
+    <p class="bajada">
+      El control completo de su negocio: ingresos y egresos, facturación y
+      guías electrónicas, cotizaciones, inventario y almacén.
+    </p>
+
+    <div class="rejilla" style="margin:32px 0; text-align:left">
+      <div class="tarjeta">
+        <h3>Facturación electrónica</h3>
+        <p>Facturas, boletas y guías de remisión enviadas a SUNAT.</p>
+      </div>
+      <div class="tarjeta">
+        <h3>Inventario y almacén</h3>
+        <p>Sepa qué tiene, qué se movió y qué le falta comprar.</p>
+      </div>
+      <div class="tarjeta">
+        <h3>Ingresos y egresos</h3>
+        <p>Cotizaciones, ventas y gastos en un solo lugar.</p>
+      </div>
+    </div>
+
+    <p class="micro">
+      CAMBIAR: precio mensual · A diferencia de RentaFácil, este va por
+      mensualidad porque la facturación electrónica tiene costo por documento.
+    </p>
+    <a class="boton boton-primario boton-grande" href="#">Quiero que me avisen</a>
+  </div>
+</section>
+
+  ══════════════════════ FIN DE NEGOCIOFÁCIL ══════════════════════════════
+-->
+
+<!-- ═════════════════════════════════════════════ pie ═════════════════ -->
+<footer>
+  <div class="contenedor">
+    <div>
+      <a class="marca" href="#" style="margin-bottom:12px">
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <rect width="64" height="64" rx="13" fill="#1F5C99"/>
+          <path d="M14 31 L32 16 L50 31 V49 a3 3 0 0 1-3 3 H17 a3 3 0 0 1-3-3 Z"
+                fill="none" stroke="#fff" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+          <circle cx="32" cy="35" r="4.6" fill="none" stroke="#fff" stroke-width="3.4"/>
+          <path d="M32 39.6 V47" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/>
+          <path d="M32 44 h4" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/>
+        </svg>
+        <b>RentaFácil</b>
+      </a>
+      <p>Software para negocios chicos del Perú.<br>
+        Simple, sin mensualidades escondidas y con alguien que le contesta.</p>
+    </div>
+
+    <div>
+      <h4>Producto</h4>
+      <ul>
+        <li><a href="#funciones">Funciones</a></li>
+        <li><a href="#precio">Precio</a></li>
+        <li><a href="#descargar">Descargar demo</a></li>
+        <li>NegocioFácil — próximamente</li>
+      </ul>
+    </div>
+
+    <div>
+      <h4>Contacto</h4>
+      <ul>
+        <li><a href="https://wa.me/51989822519">WhatsApp: +51 989 822 519</a></li>
+        <li><a href="manual.html">Manual de uso</a></li>
+      </ul>
+    </div>
+
+    <p class="legal">
+      RUC 10745996286 · Régimen MYPE Tributario · Lima, Perú<br>
+      RentaFácil es una herramienta de control interno. No emite comprobantes
+      de pago electrónicos ni reemplaza la asesoría de un contador.
+    </p>
+  </div>
+</footer>
+
+<a class="flotante" href="https://wa.me/51989822519?text=Hola,%20quiero%20saber%20m%C3%A1s%20de%20RentaF%C3%A1cil"
+   target="_blank" rel="noopener">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.3 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3z"/>
+    <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2z"/>
+  </svg>
+  <span>Escríbame</span>
+</a>
+
+<!-- Carrusel de las seis pantallas: pasa sola, con flechas y con las
+     píldoras de nombre. Nada de librerías — es HTML plano con un empujón. -->
+<script>
+(function () {
+  var raiz = document.querySelector('[data-carrusel]');
+  if (!raiz) return;
+
+  var pista = raiz.querySelector('.carrusel-pista');
+  var diapositivas = raiz.querySelectorAll('.diapositiva');
+  var pildoras = raiz.querySelectorAll('.carrusel-pildoras button');
+  var total = diapositivas.length;
+  var indice = 0;
+  var temporizador = null;
+  var sinMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function mostrar(nuevo) {
+    indice = (nuevo + total) % total;
+    pista.style.transform = 'translateX(-' + (indice * 100) + '%)';
+    pildoras.forEach(function (boton, i) {
+      boton.setAttribute('aria-current', i === indice ? 'true' : 'false');
+    });
+  }
+
+  function iniciar() {
+    detener();
+    if (sinMovimiento) return;
+    temporizador = setInterval(function () { mostrar(indice + 1); }, 5000);
+  }
+  function detener() {
+    if (temporizador) { clearInterval(temporizador); temporizador = null; }
+  }
+
+  raiz.querySelector('.carrusel-flecha.siguiente').addEventListener('click', function () {
+    mostrar(indice + 1); iniciar();
+  });
+  raiz.querySelector('.carrusel-flecha.anterior').addEventListener('click', function () {
+    mostrar(indice - 1); iniciar();
+  });
+  pildoras.forEach(function (boton, i) {
+    boton.addEventListener('click', function () { mostrar(i); iniciar(); });
+  });
+
+  // Se detiene con el mouse encima o con el teclado adentro: nunca compite
+  // con quien está mirando o leyendo una pantalla.
+  raiz.addEventListener('mouseenter', detener);
+  raiz.addEventListener('mouseleave', iniciar);
+  raiz.addEventListener('focusin', detener);
+  raiz.addEventListener('focusout', iniciar);
+
+  mostrar(0);
+  iniciar();
+})();
+</script>
+
+</body>
+</html>

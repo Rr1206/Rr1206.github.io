@@ -1,0 +1,13 @@
+# Este repositorio es PÚBLICO: solo va lo que el cliente debe ver.
+
+# El manual de ventas es interno: tiene la estrategia de precios, cuándo subir
+# de S/149 a S/199 y cómo cerrar cada venta. No se publica.
+README_WEB.md
+
+# Basura de Windows y de los editores.
+Thumbs.db
+desktop.ini
+*.tmp
+*.bak
+.vscode/
+.idea/

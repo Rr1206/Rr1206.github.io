@@ -1,0 +1,1099 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manual de RentaFácil</title>
+<style>
+  /* ── Tokens: tema claro (estado sin marcar y elección explícita) ───────── */
+  :root {
+    --papel:        #F8F9FB;
+    --hoja:         #FFFFFF;
+    --hoja-alt:     #F1F4F8;
+    --tinta:        #16202B;
+    --tinta-media:  #4E5B6B;
+    --tinta-suave:  #77828F;
+    --linea:        #E1E6ED;
+    --linea-fuerte: #C7D0DB;
+
+    --azul:         #1F5C99;
+    --azul-hondo:   #123A63;
+    --azul-tenue:   #E7F0F8;
+
+    /* Semánticos: solo para explicar el código de color de la aplicación. */
+    --verde:        #1B7A45;
+    --verde-tenue:  #E4F2EA;
+    --rojo:         #B3261E;
+    --rojo-tenue:   #FAEAE9;
+    --ambar:        #8A5A00;
+    --ambar-tenue:  #FBF1DF;
+
+    --sombra:       0 1px 2px rgba(22, 32, 43, .05), 0 8px 24px -16px rgba(22, 32, 43, .18);
+
+    --serif: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
+    --sans:  "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    --mono:  "Cascadia Mono", Consolas, "SF Mono", "Roboto Mono", ui-monospace, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --papel:        #11151A;
+      --hoja:         #191F26;
+      --hoja-alt:     #212932;
+      --tinta:        #E9EDF3;
+      --tinta-media:  #A3AEBC;
+      --tinta-suave:  #7C8796;
+      --linea:        #2A323C;
+      --linea-fuerte: #3B4551;
+
+      --azul:         #5AA6E8;
+      --azul-hondo:   #8FC4F0;
+      --azul-tenue:   #17293A;
+
+      --verde:        #4FC07E;
+      --verde-tenue:  #14301F;
+      --rojo:         #F0726A;
+      --rojo-tenue:   #331A19;
+      --ambar:        #E0A83C;
+      --ambar-tenue:  #2F2510;
+
+      --sombra:       0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -16px rgba(0, 0, 0, .7);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --papel:        #11151A;
+    --hoja:         #191F26;
+    --hoja-alt:     #212932;
+    --tinta:        #E9EDF3;
+    --tinta-media:  #A3AEBC;
+    --tinta-suave:  #7C8796;
+    --linea:        #2A323C;
+    --linea-fuerte: #3B4551;
+
+    --azul:         #5AA6E8;
+    --azul-hondo:   #8FC4F0;
+    --azul-tenue:   #17293A;
+
+    --verde:        #4FC07E;
+    --verde-tenue:  #14301F;
+    --rojo:         #F0726A;
+    --rojo-tenue:   #331A19;
+    --ambar:        #E0A83C;
+    --ambar-tenue:  #2F2510;
+
+    --sombra:       0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -16px rgba(0, 0, 0, .7);
+  }
+
+  /* ── Base ──────────────────────────────────────────────────────────────── */
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--papel);
+    color: var(--tinta);
+    font-family: var(--sans);
+    /* Lector de 40 a 65 años: el cuerpo va más grande de lo habitual. */
+    font-size: 17px;
+    line-height: 1.68;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--azul); text-decoration-color: color-mix(in srgb, var(--azul) 35%, transparent); text-underline-offset: 3px; }
+  a:hover { text-decoration-color: var(--azul); }
+  :focus-visible { outline: 2px solid var(--azul); outline-offset: 3px; border-radius: 3px; }
+
+  /* ── Cabecera ──────────────────────────────────────────────────────────── */
+  .portada {
+    background: var(--hoja);
+    border-bottom: 1px solid var(--linea);
+    padding: 56px 32px 44px;
+  }
+  .portada-interior { max-width: 1100px; margin: 0 auto; }
+
+  .marca {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--mono);
+    font-size: 12px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--azul);
+    background: var(--azul-tenue);
+    padding: 6px 12px; border-radius: 999px;
+    margin-bottom: 22px;
+  }
+  .marca svg { width: 15px; height: 15px; }
+
+  .portada h1 {
+    font-family: var(--serif);
+    font-size: clamp(38px, 6vw, 60px);
+    line-height: 1.06;
+    font-weight: 400;
+    letter-spacing: -.015em;
+    margin: 0 0 14px;
+    text-wrap: balance;
+  }
+  .portada .bajada {
+    font-size: 19px; color: var(--tinta-media);
+    max-width: 60ch; margin: 0;
+  }
+  .portada .pie-portada {
+    margin-top: 28px; padding-top: 22px;
+    border-top: 1px solid var(--linea);
+    display: flex; flex-wrap: wrap; gap: 28px;
+    font-size: 14px; color: var(--tinta-suave);
+  }
+  .portada .pie-portada strong { color: var(--tinta); font-weight: 600; display: block; }
+
+  /* ── Estructura ────────────────────────────────────────────────────────── */
+  .pagina {
+    max-width: 1100px; margin: 0 auto;
+    padding: 44px 32px 96px;
+    display: grid; grid-template-columns: 232px minmax(0, 1fr); gap: 56px;
+    align-items: start;
+  }
+
+  .indice { position: sticky; top: 28px; }
+  .indice h2 {
+    font-family: var(--mono);
+    font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--tinta-suave); margin: 0 0 14px; font-weight: 600;
+  }
+  .indice ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+  .indice a {
+    display: block; padding: 6px 10px; border-radius: 6px;
+    font-size: 14.5px; color: var(--tinta-media); text-decoration: none;
+    border-left: 2px solid transparent;
+  }
+  .indice a:hover { background: var(--hoja-alt); color: var(--tinta); border-left-color: var(--azul); }
+
+  .contenido { max-width: 70ch; display: flex; flex-direction: column; gap: 52px; }
+
+  section { scroll-margin-top: 24px; }
+  section > * + * { margin-top: 16px; }
+
+  h2 {
+    font-family: var(--serif);
+    font-size: 30px; font-weight: 400; line-height: 1.2;
+    letter-spacing: -.01em;
+    margin: 0 0 4px; padding-bottom: 12px;
+    border-bottom: 1px solid var(--linea);
+    text-wrap: balance;
+  }
+  h3 {
+    font-size: 18px; font-weight: 600; line-height: 1.35;
+    margin: 30px 0 0; color: var(--tinta);
+  }
+  p { margin: 0; }
+  strong { font-weight: 600; }
+
+  ul { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 8px; }
+  li::marker { color: var(--linea-fuerte); }
+
+  code {
+    font-family: var(--mono); font-size: .875em;
+    background: var(--hoja-alt); color: var(--tinta);
+    padding: 2px 6px; border-radius: 4px;
+    border: 1px solid var(--linea);
+  }
+  pre {
+    font-family: var(--mono); font-size: 13.5px; line-height: 1.6;
+    background: var(--hoja); color: var(--tinta-media);
+    border: 1px solid var(--linea); border-radius: 8px;
+    padding: 18px 20px; margin: 0;
+    overflow-x: auto;
+  }
+  pre code { background: none; border: none; padding: 0; font-size: inherit; }
+
+  kbd {
+    font-family: var(--mono); font-size: 12.5px; font-weight: 600;
+    background: var(--hoja); color: var(--tinta);
+    border: 1px solid var(--linea-fuerte);
+    border-bottom-width: 2px;
+    border-radius: 5px; padding: 3px 7px;
+    white-space: nowrap;
+  }
+
+  /* ── Pasos numerados: solo acá, porque acá el orden importa de verdad ──── */
+  .pasos { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 26px; counter-reset: paso; }
+  .paso { display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 18px; align-items: start; }
+  .paso::before {
+    counter-increment: paso; content: counter(paso);
+    font-family: var(--mono); font-size: 15px; font-weight: 600;
+    width: 38px; height: 38px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: var(--azul); color: var(--hoja);
+  }
+  :root[data-theme="dark"] .paso::before { color: #11151A; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .paso::before { color: #11151A; } }
+  .paso-cuerpo > * + * { margin-top: 10px; }
+  .paso-cuerpo h3 { margin: 0; font-size: 19px; }
+
+  /* ── Avisos ────────────────────────────────────────────────────────────── */
+  .aviso {
+    border: 1px solid var(--linea);
+    border-left: 3px solid var(--azul);
+    background: var(--hoja);
+    border-radius: 0 8px 8px 0;
+    padding: 18px 22px;
+    box-shadow: var(--sombra);
+  }
+  .aviso > * + * { margin-top: 10px; }
+  .aviso .rotulo {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--azul); font-weight: 600;
+    display: block; margin-bottom: 6px;
+  }
+  .aviso.critico { border-left-color: var(--rojo); }
+  .aviso.critico .rotulo { color: var(--rojo); }
+  .aviso.ojo { border-left-color: var(--ambar); }
+  .aviso.ojo .rotulo { color: var(--ambar); }
+
+  /* ── Tablas ────────────────────────────────────────────────────────────── */
+  .tabla-marco { overflow-x: auto; border: 1px solid var(--linea); border-radius: 8px; background: var(--hoja); }
+  table { border-collapse: collapse; width: 100%; font-size: 15.5px; }
+  th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--linea); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  th {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--tinta-suave); font-weight: 600; background: var(--hoja-alt);
+    white-space: nowrap;
+  }
+  td:first-child { font-weight: 600; white-space: nowrap; }
+  td.libre { font-weight: 400; white-space: normal; }
+  .atajos td:first-child { font-family: var(--mono); font-weight: 400; }
+
+  /* Muestras del código de color de la aplicación: informan, no decoran. */
+  .muestra { display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; }
+  .punto { width: 13px; height: 13px; border-radius: 3px; flex: none; border: 1px solid rgba(0,0,0,.14); }
+  .punto.verde { background: var(--verde); }
+  .punto.rojo  { background: var(--rojo); }
+  .punto.gris  { background: var(--linea-fuerte); }
+  .punto.ambar { background: var(--ambar); }
+
+  /* ── Bloque de reglas de cobro ─────────────────────────────────────────── */
+  .regla {
+    background: var(--hoja); border: 1px solid var(--linea);
+    border-radius: 8px; padding: 20px 22px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .regla .titular { font-family: var(--serif); font-size: 21px; line-height: 1.3; }
+  .linea-tiempo {
+    font-family: var(--mono); font-size: 13.5px;
+    color: var(--tinta-media); background: var(--hoja-alt);
+    border-radius: 6px; padding: 14px 16px;
+    overflow-x: auto; white-space: pre;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── Preguntas ─────────────────────────────────────────────────────────── */
+  .pregunta {
+    border-bottom: 1px solid var(--linea);
+    padding-bottom: 18px;
+  }
+  .pregunta:last-child { border-bottom: none; padding-bottom: 0; }
+  .pregunta p:first-child { font-weight: 600; margin-bottom: 6px; }
+  .pregunta p:last-child { color: var(--tinta-media); }
+
+  .cierre {
+    border-top: 1px solid var(--linea);
+    padding-top: 24px; margin-top: 8px;
+    font-size: 14px; color: var(--tinta-suave);
+  }
+
+  @media (max-width: 900px) {
+    .pagina { grid-template-columns: 1fr; gap: 36px; padding: 32px 22px 72px; }
+    .indice { position: static; border-bottom: 1px solid var(--linea); padding-bottom: 22px; }
+    .indice ol { flex-direction: row; flex-wrap: wrap; gap: 6px; }
+    .indice a { border-left: none; border: 1px solid var(--linea); }
+    .portada { padding: 40px 22px 34px; }
+    body { font-size: 16.5px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="portada">
+  <div class="portada-interior">
+    <span class="marca">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/>
+      </svg>
+      RentaFácil
+    </span>
+    <h1>Manual de uso</h1>
+    <p class="bajada">
+      Para controlar el alquiler de sus cuartos, departamentos o locales.
+      Sin internet, sin mensualidades, sin complicaciones.
+    </p>
+    <div class="pie-portada">
+      <div><strong>Versión 0.1.0</strong>Windows 10 y 11</div>
+      <div><strong>Funciona sin internet</strong>Sus datos no salen de su equipo</div>
+      <div><strong>Licencia perpetua</strong>Se paga una sola vez</div>
+    </div>
+  </div>
+</header>
+
+<div class="pagina">
+  <nav class="indice" aria-label="Contenido del manual">
+    <h2>Contenido</h2>
+    <ol>
+      <li><a href="#empezar">Antes de empezar</a></li>
+      <li><a href="#primeros-pasos">Primeros pasos</a></li>
+      <li><a href="#como-se-cobra">Cómo se cobra</a></li>
+      <li><a href="#dia-a-dia">El día a día</a></li>
+      <li><a href="#pantallas">Las pantallas</a></li>
+      <li><a href="#recibos">Los recibos</a></li>
+      <li><a href="#respaldos">Respaldos</a></li>
+      <li><a href="#licencia">Licencia</a></li>
+      <li><a href="#atajos">Atajos de teclado</a></li>
+      <li><a href="#preguntas">Preguntas frecuentes</a></li>
+      <li><a href="#donde">Dónde está cada cosa</a></li>
+    </ol>
+  </nav>
+
+  <main class="contenido">
+
+    <section id="empezar">
+      <h2>Antes de empezar</h2>
+      <p>
+        Tres cosas que conviene tener claras desde el principio, porque explican
+        cómo se comporta el programa en todo lo demás.
+      </p>
+
+      <div class="aviso">
+        <span class="rotulo">Sus datos son suyos</span>
+        <p>
+          RentaFácil no manda nada a internet. Todo se guarda en su computadora,
+          en <code>C:\Users\SU-USUARIO\AppData\Local\RentaFacil</code>.
+        </p>
+      </div>
+
+      <div class="aviso">
+        <span class="rotulo">Se respalda solo</span>
+        <p>
+          Cada vez que cierra el programa se guarda una copia de seguridad, y se
+          conservan las últimas diez. Si algo sale mal, puede volver atrás.
+          Lea <a href="#respaldos">Respaldos</a>: es la parte que le puede salvar
+          años de trabajo.
+        </p>
+      </div>
+
+      <div class="aviso ojo">
+        <span class="rotulo">No es facturación electrónica</span>
+        <p>
+          RentaFácil es para su control interno. Los recibos que genera son
+          constancia de que usted recibió el dinero, no boletas ni facturas
+          de SUNAT.
+        </p>
+      </div>
+    </section>
+
+    <section id="primeros-pasos">
+      <h2>Primeros pasos</h2>
+      <p>
+        Unos diez minutos, una sola vez y en este orden. Después el programa
+        trabaja solo.
+      </p>
+
+      <ol class="pasos">
+        <li class="paso">
+          <div class="paso-cuerpo">
+            <h3>Registre sus datos</h3>
+            <p>
+              En <strong>Configuración</strong>, escriba su nombre, documento y
+              teléfono, y cargue su logo si tiene uno. Es lo que sale impreso en
+              cada recibo que entregue.
+            </p>
+            <p>Aproveche para revisar tres ajustes:</p>
+            <ul>
+              <li>
+                <strong>Moneda propuesta</strong> — la que se le sugiere al crear
+                un contrato. Cada contrato puede usar otra: puede tener un depa
+                en dólares y un cuarto en soles sin problema.
+              </li>
+              <li>
+                <strong>Días de gracia</strong> — cuántos días de tolerancia da
+                antes de marcar un cobro como vencido.
+              </li>
+              <li>
+                <strong>Tarifas de agua y luz</strong> — solo si va a cobrar los
+                servicios por medidor.
+              </li>
+            </ul>
+          </div>
+        </li>
+
+        <li class="paso">
+          <div class="paso-cuerpo">
+            <h3>Cree su propiedad</h3>
+            <p>
+              <strong>Unidades → Nueva propiedad.</strong> Una propiedad es el
+              edificio, la casa o el terreno: <em>Edificio Central</em>,
+              <em>Casa Surco</em>. Si todo lo que alquila está en un solo lugar,
+              cree una sola.
+            </p>
+          </div>
+        </li>
+
+        <li class="paso">
+          <div class="paso-cuerpo">
+            <h3>Cree sus unidades</h3>
+            <p>
+              <strong>Unidades → Nueva unidad.</strong> Una unidad es lo que
+              alquila: el cuarto 101, el departamento 301, la cochera 3.
+            </p>
+            <div class="tabla-marco">
+              <table>
+                <thead><tr><th>Campo</th><th>Qué poner</th></tr></thead>
+                <tbody>
+                  <tr><td>Código</td><td class="libre">Como usted lo llama a diario: <code>101</code>, <code>Cuarto B</code>, <code>Local 2</code></td></tr>
+                  <tr><td>Tipo</td><td class="libre">Cuarto, departamento, local o cochera</td></tr>
+                  <tr><td>Renta sugerida</td><td class="libre">Lo que suele cobrar. Se usa para prellenar el contrato</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </li>
+
+        <li class="paso">
+          <div class="paso-cuerpo">
+            <h3>Registre a sus inquilinos</h3>
+            <p>
+              <strong>Inquilinos → Nuevo inquilino.</strong> Lo único obligatorio
+              son el nombre y el apellido, pero <strong>cargue el teléfono</strong>:
+              es lo que después le va a permitir mandarles el recordatorio de pago
+              por WhatsApp con un clic.
+            </p>
+          </div>
+        </li>
+
+        <li class="paso">
+          <div class="paso-cuerpo">
+            <h3>Cree los contratos</h3>
+            <p>
+              <strong>Contratos → Nuevo contrato.</strong> Acá une una unidad con
+              un inquilino.
+            </p>
+            <div class="tabla-marco">
+              <table>
+                <thead><tr><th>Campo</th><th>Qué poner</th></tr></thead>
+                <tbody>
+                  <tr><td>Inicio</td><td class="libre">Desde cuándo alquila</td></tr>
+                  <tr><td>Fin</td><td class="libre">Hasta cuándo. Si es mes a mes, marque <em>Sin fecha de fin</em></td></tr>
+                  <tr><td>Renta mensual</td><td class="libre">Cuánto cobra al mes, en la moneda que pactaron</td></tr>
+                  <tr><td>Día de pago</td><td class="libre">El día del mes en que le pagan</td></tr>
+                  <tr><td>Garantía</td><td class="libre">Lo que recibió de garantía. Deje 0 si no recibió</td></tr>
+                  <tr><td>Agua y luz</td><td class="libre">Define si se cobran aparte o ya están dentro de la renta. Vea el cuadro de abajo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              Desde acá el programa trabaja solo: cada vez que lo abra genera los
+              cobros de los meses que falten.
+            </p>
+
+            <div class="aviso ojo">
+              <span class="rotulo">Las dos formas de cobrar el agua y la luz</span>
+              <p>
+                Es la decisión que más confunde. Elegir <em>incluidos</em>
+                <strong>no suma nada a la renta: hace lo contrario</strong>.
+              </p>
+              <div class="tabla-marco">
+                <table>
+                  <thead><tr><th>Si elige…</th><th>Qué cobra el programa</th></tr></thead>
+                  <tbody>
+                    <tr>
+                      <td>Aparte, según el medidor</td>
+                      <td class="libre">
+                        Renta S/&nbsp;500 <strong>+</strong> un cobro extra
+                        «Luz S/&nbsp;78.84» calculado con la lectura. El inquilino
+                        ve dos líneas y paga S/&nbsp;578.84
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Incluidos en la renta</td>
+                      <td class="libre">
+                        Solo «Renta S/&nbsp;550». Usted ya metió el agua y la luz
+                        dentro de ese precio al pactar el alquiler. No se genera
+                        ningún cobro extra
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p>
+                Con la segunda opción igual puede registrar lecturas: quedan como
+                control de consumo, pero no generan cobro. Esas unidades tampoco
+                aparecen en «faltan por leer», y el programa se lo avisa antes de
+                guardar.
+              </p>
+            </div>
+
+            <div class="aviso">
+              <span class="rotulo">¿Cuándo se cobra el consumo?</span>
+              <p>
+                <strong>Con la renta del mes siguiente.</strong> El medidor se lee
+                cuando el mes ya pasó, así que cobrarlo dentro del mismo mes lo
+                haría nacer vencido.
+              </p>
+              <div class="linea-tiempo">Consumo de AGOSTO · día de pago 5  ────►  vence el 5 de SETIEMBRE
+                                        (junto con la renta de setiembre)</div>
+              <p>
+                El formulario se lo dice antes de guardar. En la lista de Cobros el
+                concepto sigue diciendo «Luz — Agosto 2026» —es el consumo de
+                agosto— pero con vencimiento de setiembre.
+              </p>
+            </div>
+          </div>
+        </li>
+      </ol>
+
+      <div class="aviso ojo">
+        <span class="rotulo">Versión demo</span>
+        <p>
+          Sin licencia puede crear hasta <strong>3 unidades</strong>. Todo lo
+          demás funciona completo. Para registrar más,
+          <a href="#licencia">active su licencia</a>.
+        </p>
+      </div>
+    </section>
+
+    <section id="como-se-cobra">
+      <h2>Cómo se cobra el alquiler</h2>
+      <p>
+        Esto define todos los números que va a ver, así que vale la pena leerlo
+        una vez con calma.
+      </p>
+
+      <div class="regla">
+        <p class="titular">Se cobra el mes completo. Nunca medio mes.</p>
+        <p>
+          El ciclo se ancla al día de pago. Un contrato que empieza el 15 de
+          agosto vence el 15 de agosto y cubre hasta el 14 de setiembre.
+        </p>
+        <div class="linea-tiempo">15 ago ─────────── 15 set ─────────── 15 oct ─────────── 15 nov
+   1er cobro         2do cobro         3er cobro         4to cobro</div>
+      </div>
+
+      <h3>Si el día de pago no existe ese mes</h3>
+      <p>
+        Con día de pago 31, en febrero el cobro vence el 28 (o el 29 en año
+        bisiesto). Se recorta al último día del mes; nunca se corre al mes
+        siguiente.
+      </p>
+
+      <h3>Cuando el inquilino se va</h3>
+      <p>
+        El último mes también se cobra completo, siempre que el contrato
+        siguiera vigente el día del vencimiento. Si se va el 20 de octubre y
+        pagaba los 15, el cobro del 15 de octubre corresponde entero.
+      </p>
+    </section>
+
+    <section id="dia-a-dia">
+      <h2>El día a día</h2>
+
+      <h3>El panel principal</h3>
+      <p>Es lo primero que ve al abrir. Responde tres cosas de un vistazo:</p>
+      <ul>
+        <li>
+          <strong>Cuánto le deben</strong> — el número grande, arriba a la
+          izquierda. Con contratos en dos monedas verá dos números:
+          <strong>nunca se suman</strong>, porque sumar soles con dólares daría
+          un número falso.
+        </li>
+        <li>
+          <strong>Quién le debe</strong> — la lista roja, del más atrasado al
+          menos. Cada renglón trae su botón <em>Cobrar</em>.
+        </li>
+        <li>
+          <strong>Quién paga esta semana</strong> — los vencimientos de los
+          próximos siete días.
+        </li>
+      </ul>
+      <div class="aviso">
+        <span class="rotulo">Por qué el tablero es de hoy</span>
+        <p>
+          Esos tres números son <strong>siempre de hoy</strong>: cuánto le deben
+          ahora, quién está atrasado ahora. De eso se trata un tablero. Lo que sí
+          puede mirar de otro mes es «Cobrado en el mes», abajo, que tiene su
+          propio selector de año y mes para comparar contra meses anteriores.
+        </p>
+      </div>
+
+      <h3>Registrar un pago</h3>
+      <p>Desde <strong>Cobros del mes</strong>, son dos clics:</p>
+      <ul>
+        <li>Haga clic en la fila del cobro.</li>
+        <li>Pulse <strong>Registrar pago</strong>, o <kbd>Ctrl</kbd> + <kbd>N</kbd>.</li>
+      </ul>
+      <p>
+        Se abre una ventana con el monto completo ya escrito. Elija la forma de
+        pago —efectivo, Yape, Plin, transferencia o depósito— y confirme.
+      </p>
+
+      <div class="aviso">
+        <span class="rotulo">Pagos parciales</span>
+        <p>
+          Si le pagan solo una parte, cambie el monto. El saldo queda pendiente y
+          la fila pasa a <em>Parcial</em>. Cobra el resto cuando se lo den.
+        </p>
+        <p>
+          Si escribe un monto mayor al saldo, el programa se lo avisa y no lo
+          acepta.
+        </p>
+      </div>
+
+      <h3>Cobrar varias cosas juntas</h3>
+      <p>
+        Si le pagan renta, agua y luz de una vez, seleccione las tres filas
+        manteniendo <kbd>Ctrl</kbd> y pulse Registrar pago. Salen en
+        <strong>un solo recibo</strong>.
+      </p>
+
+      <h3>Mandar un recordatorio por WhatsApp</h3>
+      <p>
+        <strong>Inquilinos</strong> → elija a la persona →
+        <strong>Enviar recordatorio</strong>. Se abre WhatsApp con el mensaje ya
+        escrito: su nombre, cuánto debe y cuántos días de atraso lleva. Usted
+        solo revisa y envía.
+      </p>
+      <p>
+        Si el botón está apagado es porque esa persona no tiene teléfono
+        registrado. Edítela y agréguelo.
+      </p>
+
+      <h3>Avisarles a todos los morosos</h3>
+      <p>
+        El botón <strong>Recordar a todos</strong> abre la lista de quienes están
+        atrasados. WhatsApp abre una conversación por vez, así que funciona como
+        lista de trabajo: pulse <strong>Abrir el siguiente pendiente</strong>,
+        mande el mensaje, y vuelva por el siguiente. Cada uno se marca en verde
+        apenas se abre, para que no pierda la cuenta.
+      </p>
+
+      <h3>Estado de cuenta</h3>
+      <p>
+        En la ficha del inquilino, <strong>Estado de cuenta</strong> genera un PDF
+        con todos sus cobros del último año: qué se le cobró, cuánto pagó, qué
+        quedó debiendo y el saldo final.
+      </p>
+      <p>
+        Es el papel que le van a pedir cuando quieran ver «todo lo que le he
+        pagado» o cuando haya una discusión sobre una deuda.
+      </p>
+
+      <h3>Anular un pago mal registrado</h3>
+      <p>
+        <strong>Cobros del mes</strong> → elija la fila →
+        <strong>Anular pago</strong>. El saldo vuelve a quedar pendiente. El pago
+        no se borra: queda marcado como anulado en el historial, que es lo
+        correcto cuando se trata de dinero.
+      </p>
+    </section>
+
+    <section id="pantallas">
+      <h2>Las pantallas</h2>
+
+      <h3>Unidades</h3>
+      <p>Una tarjeta por unidad, con color según cómo está:</p>
+      <div class="tabla-marco">
+        <table>
+          <thead><tr><th>Color</th><th>Significa</th></tr></thead>
+          <tbody>
+            <tr><td><span class="muestra"><span class="punto verde"></span>Verde</span></td><td class="libre">Ocupada y al día</td></tr>
+            <tr><td><span class="muestra"><span class="punto rojo"></span>Rojo</span></td><td class="libre">Ocupada y debiendo</td></tr>
+            <tr><td><span class="muestra"><span class="punto gris"></span>Gris</span></td><td class="libre">Disponible para alquilar</td></tr>
+            <tr><td><span class="muestra"><span class="punto ambar"></span>Ámbar</span></td><td class="libre">En mantenimiento</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Un clic en la tarjeta abre su ficha: el contrato vigente, todo el
+        historial de cobros de esa unidad, y los botones para editarla,
+        archivarla, crear un contrato o terminarlo.
+      </p>
+      <p>
+        Para editar o archivar una <strong>propiedad</strong> entera, elíjala
+        primero en el desplegable de arriba.
+      </p>
+
+      <h3>Inquilinos</h3>
+      <p>
+        Una sola caja de búsqueda que mira nombre, apellido, DNI y teléfono a la
+        vez. Escriba lo que recuerde. Al elegir a alguien verá su contrato,
+        cuánto debe y su historial de pagos.
+      </p>
+
+      <h3>Contratos</h3>
+      <p>
+        Arriba aparece un aviso ámbar cuando alguno vence en menos de 30 días.
+        <strong>Renovar</strong> extiende la fecha de fin;
+        <strong>Terminar</strong> cierra el contrato en la fecha real de salida y
+        libera la unidad. Las deudas pendientes se conservan en el historial del
+        inquilino.
+      </p>
+
+      <h3>Subir la renta a varios de una vez</h3>
+      <p>
+        El botón <strong>Subir la renta</strong> sube el alquiler de todos los
+        contratos que elija, por porcentaje o por monto fijo. Antes de aplicar
+        verá una tabla con la renta actual y la nueva de cada uno.
+      </p>
+      <p>
+        Por defecto redondea a la unidad más cercana: un aumento del 5% sobre
+        S/&nbsp;495 queda en <strong>S/&nbsp;520</strong>, no en S/&nbsp;519.75,
+        que es como se sube un alquiler de verdad.
+      </p>
+      <div class="aviso ojo">
+        <span class="rotulo">Los cobros ya generados no cambian</span>
+        <p>
+          Si el cobro de este mes ya salió, se queda como estaba: la renta nueva
+          se usa desde el mes siguiente. El programa le avisa cuántos contratos
+          están en ese caso.
+        </p>
+      </div>
+
+      <h3>Cobros del mes</h3>
+      <p>
+        Su mesa de trabajo: todos los cobros del periodo, con filtros por estado
+        y por propiedad.
+      </p>
+      <p>
+        Arriba hay <strong>dos desplegables: año y mes</strong>. Puede llegar a
+        cualquier mes de todo su historial, por viejo que sea — el año aparece
+        solo en cuanto hay algún dato en él, así que la lista crece con el paso
+        de los años sin que usted haga nada.
+      </p>
+      <p>
+        <strong>Agregar cobro</strong> sirve para lo que el programa no genera
+        solo: internet, una reparación, un extra que acordaron.
+      </p>
+
+      <h3>Agua y luz</h3>
+      <p>
+        Registre la lectura del medidor y el programa calcula el monto y genera
+        el cobro del mes —salvo que el contrato tenga los servicios incluidos en
+        la renta, donde la lectura queda solo como control. La lectura anterior
+        se llena sola con la del mes pasado, y arriba le avisa cuántas unidades
+        le faltan leer.
+      </p>
+      <p>La columna <strong>Cobro</strong> le dice qué pasó con cada lectura:</p>
+      <div class="tabla-marco">
+        <table>
+          <thead><tr><th>Dice</th><th>Significa</th></tr></thead>
+          <tbody>
+            <tr><td>Cobro generado</td><td class="libre">Se creó el cobro de agua o luz del periodo</td></tr>
+            <tr><td>Incluido en la renta</td><td class="libre">El contrato ya los cobra dentro de la renta</td></tr>
+            <tr><td>Sin contrato</td><td class="libre">La unidad estaba vacía ese mes</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Si se equivocó al escribir un número, elija la fila y pulse
+        <strong>Corregir lectura</strong>: el cobro se actualiza solo.
+      </p>
+      <div class="aviso">
+        <span class="rotulo">Sobre las tarifas</span>
+        <p>
+          Se configuran en Configuración, una por moneda. La tarifa eléctrica
+          admite cuatro decimales —<code>0.6543</code>— porque así la publican;
+          redondearla haría que el recibo no cuadre.
+        </p>
+      </div>
+
+      <h3>Reportes</h3>
+      <p>
+        Ingresos por mes con gráfico de barras, ingresos por propiedad y
+        morosidad histórica por inquilino.
+      </p>
+      <p>
+        El desplegable de arriba ofrece ventanas móviles —últimos 6, 12 o 24
+        meses— y también <strong>años completos</strong> («Año 2025», «Año
+        2024»…), que aparecen solos a medida que usted acumula historial.
+      </p>
+      <p>
+        Todo se exporta a Excel o a PDF. En Excel los montos salen como número,
+        así que puede sumarlos y filtrarlos.
+      </p>
+
+      <h3>Impuesto de renta (primera categoría)</h3>
+      <p>
+        La pestaña <strong>Impuesto de renta</strong> le arma la parte tediosa
+        del <strong>Formulario 1683</strong>: una fila por unidad y por mes, con
+        el documento del inquilino y el 5% que corresponde. Es lo que le lleva al
+        contador.
+      </p>
+      <div class="aviso critico">
+        <span class="rotulo">La regla que sorprende a todo el mundo</span>
+        <p>
+          <strong>SUNAT cobra sobre la renta devengada, no sobre la cobrada.</strong>
+          Si el inquilino no le pagó, usted igual debe el impuesto de ese mes.
+        </p>
+      </div>
+      <div class="tabla-marco">
+        <table>
+          <thead><tr><th>Columna</th><th>Qué es</th></tr></thead>
+          <tbody>
+            <tr><td>Devengado</td><td class="libre">La renta que venció ese mes. <strong>Es la base del impuesto</strong></td></tr>
+            <tr><td>Cobrado</td><td class="libre">Lo que efectivamente entró. Solo referencia</td></tr>
+            <tr><td>Servicios</td><td class="libre">Agua y luz cobrados aparte. <strong>No entran en la base</strong></td></tr>
+            <tr><td>Impuesto</td><td class="libre">El 5% del devengado</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        El agua y la luz que usted le cobra aparte son recuperación de un gasto,
+        no renta del alquiler, así que van en su propia columna y no suben el
+        impuesto. Si su contador opina distinto para su caso, tiene el número a
+        la vista para sumarlo.
+      </p>
+      <p>
+        Los contratos en dólares salen en su propia fila, en dólares. El programa
+        <strong>no convierte monedas</strong>: eso necesita el tipo de cambio del
+        día y lo hace su contador. La tasa se cambia en
+        <strong>Configuración → Impuesto a la renta</strong>.
+      </p>
+      <div class="aviso ojo">
+        <span class="rotulo">Es un cálculo referencial</span>
+        <p>
+          RentaFácil no declara ni paga nada, ni emite boletas o facturas
+          electrónicas: le da el número ordenado. Confirme siempre con su
+          contador.
+        </p>
+      </div>
+    </section>
+
+    <section id="recibos">
+      <h2>Los recibos</h2>
+      <p>
+        Cada vez que registra un pago, el programa ofrece generar el recibo en
+        PDF. Lleva su logo, sus datos, los del inquilino, el detalle de lo
+        cobrado, el total en números y en letras, y una línea para su firma.
+      </p>
+      <p>
+        Para reimprimir uno: <strong>Cobros del mes</strong> → elija la fila →
+        <strong>Imprimir recibo</strong>, o <kbd>Ctrl</kbd> + <kbd>P</kbd>.
+      </p>
+    </section>
+
+    <section id="respaldos">
+      <h2>Respaldos</h2>
+      <div class="aviso critico">
+        <span class="rotulo">Lo más importante del manual</span>
+        <p>
+          Si pierde su base de datos, pierde años de historial. El programa
+          respalda solo cada vez que lo cierra y conserva las últimas diez
+          copias, pero conviene que usted sepa usar estos botones.
+        </p>
+      </div>
+
+      <p>En <strong>Configuración → Respaldo de sus datos</strong>:</p>
+      <div class="tabla-marco">
+        <table>
+          <thead><tr><th>Botón</th><th>Para qué</th></tr></thead>
+          <tbody>
+            <tr><td>Respaldar ahora</td><td class="libre">Una copia extra, cuando quiera</td></tr>
+            <tr><td>Guardar copia en…</td><td class="libre">Llevarse una copia a una USB o a la nube</td></tr>
+            <tr><td>Restaurar desde archivo…</td><td class="libre">Volver a una copia anterior</td></tr>
+            <tr><td>Abrir carpeta</td><td class="libre">Ver dónde está todo</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="aviso">
+        <span class="rotulo">La costumbre que le recomiendo</span>
+        <p>
+          Una vez al mes pulse <em>Guardar copia en…</em> y deje el archivo en una
+          USB o en su correo. Si la computadora se malogra, con ese único archivo
+          recupera todo.
+        </p>
+      </div>
+
+      <p>
+        Al restaurar, el programa guarda primero una copia de lo que tiene ahora
+        y le pide cerrar y volver a abrir para terminar. No pierde nada.
+      </p>
+
+      <h3>La papelera</h3>
+      <p>
+        En <strong>Configuración → Ver papelera</strong> está todo lo que
+        archivó: propiedades, unidades, inquilinos y cobros. Elija uno, pulse
+        <strong>Restaurar</strong> y vuelve a las listas con todo su historial.
+      </p>
+      <p>
+        Nada se borra de verdad en RentaFácil. Archivar solo lo saca de la vista.
+      </p>
+    </section>
+
+    <section id="licencia">
+      <h2>Licencia</h2>
+      <p>
+        Sin licencia, RentaFácil funciona completo pero con un tope de tres
+        unidades. Los cobros, los recibos, los reportes y los respaldos están
+        todos disponibles.
+      </p>
+
+      <ol class="pasos">
+        <li class="paso">
+          <div class="paso-cuerpo">
+            <h3>Pulse «Pedirla por WhatsApp»</h3>
+            <p>
+              En <strong>Configuración → Licencia</strong>. Se abre el chat con
+              el vendedor y su ID de equipo ya escrito en el mensaje: no tiene
+              que copiar ni dictar nada.
+            </p>
+          </div>
+        </li>
+        <li class="paso">
+          <div class="paso-cuerpo">
+            <h3>Le devolverá una clave de 20 caracteres</h3>
+            <p>
+              Si prefiere mandarlo por otro medio, use <strong>Copiar ID</strong>.
+              Son 16 caracteres, por ejemplo <code>A3F2-9B71-C4D8-2E15</code>.
+            </p>
+          </div>
+        </li>
+        <li class="paso">
+          <div class="paso-cuerpo">
+            <h3>Péguela y pulse Activar</h3>
+            <p>La barra amarilla de arriba desaparece y el tope se levanta.</p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="aviso">
+        <span class="rotulo">Nada se pierde al activar</span>
+        <p>
+          Cuando intente registrar la cuarta unidad, el programa se lo avisa y le
+          dice el precio. Lo que ya cargó se conserva: al activar la licencia
+          sigue trabajando donde quedó, con las mismas propiedades, inquilinos y
+          cobros.
+        </p>
+      </div>
+
+      <div class="aviso ojo">
+        <span class="rotulo">Una clave, una computadora</span>
+        <p>
+          La clave sirve solo en el equipo para el que se generó. Si cambia de
+          computadora o formatea, pida una nueva.
+        </p>
+        <p>
+          La clave nunca lleva las letras <strong>I</strong> ni <strong>O</strong>,
+          ni los números <strong>0</strong> ni <strong>1</strong>, justamente para
+          que no se confundan al dictarla por teléfono.
+        </p>
+      </div>
+
+      <h3>Cambiar los colores</h3>
+      <p>
+        En <strong>Configuración → Apariencia</strong> puede elegir entre el tema
+        <strong>Claro</strong> y el <strong>Oscuro</strong>. Se aplica al instante
+        y queda guardado para la próxima vez.
+      </p>
+    </section>
+
+    <section id="atajos">
+      <h2>Atajos de teclado</h2>
+      <div class="aviso">
+        <span class="rotulo">La ayuda, siempre a mano</span>
+        <p>
+          Abajo a la izquierda, debajo del menú, está <strong>Manual de uso</strong>:
+          abre este mismo documento. También responde a la tecla <kbd>F1</kbd>
+          desde cualquier pantalla.
+        </p>
+      </div>
+      <div class="tabla-marco">
+        <table class="atajos">
+          <thead><tr><th>Atajo</th><th>Qué hace</th></tr></thead>
+          <tbody>
+            <tr><td><kbd>Ctrl</kbd> + <kbd>N</kbd></td><td class="libre">Crear lo nuevo de la pantalla en la que está</td></tr>
+            <tr><td><kbd>Ctrl</kbd> + <kbd>F</kbd></td><td class="libre">Buscar un inquilino</td></tr>
+            <tr><td><kbd>Ctrl</kbd> + <kbd>P</kbd></td><td class="libre">Imprimir el recibo</td></tr>
+            <tr><td><kbd>F1</kbd></td><td class="libre">Abrir el manual de uso</td></tr>
+            <tr><td><kbd>F5</kbd></td><td class="libre">Actualizar la pantalla</td></tr>
+            <tr><td><kbd>Ctrl</kbd> + <kbd>1</kbd> … <kbd>5</kbd></td><td class="libre">Saltar entre las pantallas principales</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="preguntas">
+      <h2>Preguntas frecuentes</h2>
+
+      <div class="pregunta">
+        <p>¿Tengo que crear los cobros de cada mes a mano?</p>
+        <p>
+          No. Se generan solos cada vez que abre el programa. Si estuvo un mes
+          sin abrirlo, al abrirlo aparecen todos los que faltaban.
+        </p>
+      </div>
+
+      <div class="pregunta">
+        <p>¿Y si abro el programa tres veces el mismo día?</p>
+        <p>No pasa nada. No se duplica ningún cobro.</p>
+      </div>
+
+      <div class="pregunta">
+        <p>Alquilo en dólares y en soles. ¿Se puede?</p>
+        <p>
+          Sí. Cada contrato tiene su moneda y los totales se muestran siempre
+          separados. Nunca verá soles y dólares sumados en un mismo número.
+        </p>
+      </div>
+
+      <div class="pregunta">
+        <p>Un inquilino me pagó de menos. ¿Cómo lo registro?</p>
+        <p>
+          Registre el pago con el monto que le dio. El saldo queda pendiente y la
+          fila pasa a <em>Parcial</em>.
+        </p>
+      </div>
+
+      <div class="pregunta">
+        <p>Borré una unidad por error.</p>
+        <p>
+          Nada se borra de verdad: se archiva. Vaya a
+          <strong>Configuración → Ver papelera</strong>, elíjala y pulse
+          <em>Restaurar</em>. Vuelve tal como estaba, con todo su historial.
+        </p>
+      </div>
+
+      <div class="pregunta">
+        <p>¿Puedo usar el programa en dos computadoras?</p>
+        <p>
+          La licencia sirve en una sola. Puede llevarse los datos con
+          <em>Guardar copia en…</em> y restaurarlos en la otra, pero necesitaría
+          una licencia para cada equipo.
+        </p>
+      </div>
+
+      <div class="pregunta">
+        <p>No me abre el programa.</p>
+        <p>
+          Busque el archivo <code>registro.log</code> dentro de la carpeta de
+          datos y mándeselo a soporte. Ahí queda anotado qué pasó.
+        </p>
+      </div>
+    </section>
+
+    <section id="donde">
+      <h2>Dónde está cada cosa</h2>
+      <pre><code>C:\Users\SU-USUARIO\AppData\Local\RentaFacil\
+├── rentafacil.db      ← toda su información
+├── respaldos\         ← las últimas 10 copias
+├── recibos\           ← los PDF que generó
+└── registro.log       ← para soporte, si algo falla</code></pre>
+      <p class="cierre">
+        RentaFácil 0.1.0 · Manual de uso · Control de alquileres para Windows
+      </p>
+    </section>
+
+  </main>
+</div>
+
+</body>
+</html>
