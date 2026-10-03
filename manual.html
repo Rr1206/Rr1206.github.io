@@ -342,6 +342,7 @@
     <ol>
       <li><a href="#empezar">Antes de empezar</a></li>
       <li><a href="#primeros-pasos">Primeros pasos</a></li>
+      <li><a href="#desde-excel">Cargar desde Excel</a></li>
       <li><a href="#como-se-cobra">Cómo se cobra</a></li>
       <li><a href="#dia-a-dia">El día a día</a></li>
       <li><a href="#pantallas">Las pantallas</a></li>
@@ -396,6 +397,11 @@
       <p>
         Unos diez minutos, una sola vez y en este orden. Después el programa
         trabaja solo.
+      </p>
+      <p>
+        ¿Ya tiene sus cuartos e inquilinos en un Excel? Haga el primer paso y
+        después <a href="#desde-excel">cárguelos desde Excel</a>: se ahorra
+        escribirlos uno por uno.
       </p>
 
       <ol class="pasos">
@@ -481,7 +487,7 @@
               <table>
                 <thead><tr><th>Campo</th><th>Qué poner</th></tr></thead>
                 <tbody>
-                  <tr><td>Inicio</td><td class="libre">Desde cuándo alquila</td></tr>
+                  <tr><td>Inicio</td><td class="libre">Desde cuándo alquila. Si el inquilino ya vivía ahí antes de usar el programa, ponga el primer día del mes actual: se genera un cobro por cada mes desde esta fecha</td></tr>
                   <tr><td>Fin</td><td class="libre">Hasta cuándo. Si es mes a mes, marque <em>Sin fecha de fin</em></td></tr>
                   <tr><td>Renta mensual</td><td class="libre">Cuánto cobra al mes, en la moneda que pactaron</td></tr>
                   <tr><td>Día de pago</td><td class="libre">El día del mes en que le pagan</td></tr>
@@ -562,6 +568,80 @@
           se pierde.
         </p>
       </div>
+    </section>
+
+    <section id="desde-excel">
+      <h2>Cargue sus datos desde Excel</h2>
+      <p>
+        Si ya lleva la cuenta en una hoja de Excel, no tiene que escribir todo
+        de nuevo. El programa trae sus propiedades, unidades, inquilinos y
+        contratos de un solo archivo.
+      </p>
+
+      <ol class="pasos">
+        <li class="paso">
+          <div class="paso-cuerpo">
+            <h3>Descargue la plantilla</h3>
+            <p>
+              <strong>Configuración → Importar desde Excel… → Descargar
+              plantilla.</strong> Es un Excel con cuatro hojas
+              —<em>Propiedades</em>, <em>Unidades</em>, <em>Inquilinos</em> y
+              <em>Contratos</em>— con una fila de ejemplo en cada una para que
+              vea cómo va cada dato.
+            </p>
+          </div>
+        </li>
+
+        <li class="paso">
+          <div class="paso-cuerpo">
+            <h3>Copie sus datos</h3>
+            <p>
+              Pegue lo que ya tiene debajo de la fila de ejemplo. No hace falta
+              borrar el ejemplo: el programa lo reconoce y no lo importa.
+            </p>
+            <div class="tabla-marco">
+              <table>
+                <thead><tr><th>Hoja</th><th>Tenga en cuenta</th></tr></thead>
+                <tbody>
+                  <tr><td>Propiedades</td><td class="libre">El nombre es cómo la reconocen las otras hojas: escríbalo igual en todas. Mayúsculas o minúsculas dan lo mismo</td></tr>
+                  <tr><td>Unidades</td><td class="libre">Tipo: <code>cuarto</code>, <code>departamento</code>, <code>local</code> o <code>cochera</code>. Moneda: <code>PEN</code> para soles, <code>USD</code> para dólares. Si las deja vacías, se toma cuarto y soles</td></tr>
+                  <tr><td>Inquilinos</td><td class="libre">Ponga el DNI: es lo que une a cada inquilino con su contrato</td></tr>
+                  <tr><td>Contratos</td><td class="libre">Fechas como año-mes-día: <code>2026-10-01</code>; una celda con formato de fecha de Excel también sirve. Día de pago del 1 al 31. Fecha de fin y garantía son opcionales</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="aviso ojo">
+              <span class="rotulo">La fecha de inicio de los inquilinos antiguos</span>
+              <p>
+                El programa genera un cobro por cada mes desde la fecha de inicio
+                del contrato. Si un inquilino vive con usted desde 2023 y pone
+                esa fecha, le van a aparecer como deuda todos los meses desde
+                entonces, aunque se los haya pagado. Para los inquilinos que ya
+                tenía, ponga como inicio <strong>el primer día del mes
+                actual</strong>: el programa empieza a llevarle la cuenta desde
+                ahí.
+              </p>
+            </div>
+          </div>
+        </li>
+
+        <li class="paso">
+          <div class="paso-cuerpo">
+            <h3>Súbala</h3>
+            <p>
+              Vuelva a <strong>Importar desde Excel…</strong>, pulse
+              <strong>Elegir archivo…</strong> y elija su plantilla. Al terminar
+              ve una tabla con cada fila: cuál entró y, si alguna no, por qué.
+            </p>
+            <p>
+              Corrija en el Excel lo que falló y vuelva a subir el archivo
+              completo. Lo que ya había entrado se reconoce y <strong>no se
+              duplica</strong>.
+            </p>
+          </div>
+        </li>
+      </ol>
     </section>
 
     <section id="como-se-cobra">
